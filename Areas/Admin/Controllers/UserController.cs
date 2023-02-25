@@ -1,6 +1,7 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
 using MadhuBlog.Models;
 using MadhuBlog.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,14 +13,14 @@ namespace MadhuBlog.Areas.Admin.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly INotyfService _notification;
+        public INotyfService _notification { get; }
         public UserController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, INotyfService notification)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _notification = notification;
         }
-
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();
@@ -27,12 +28,16 @@ namespace MadhuBlog.Areas.Admin.Controllers
         [HttpGet("Login")]
         public IActionResult Login()
         {
-            return View(new LoginVM());
+            if (!HttpContext.User.Identity!.IsAuthenticated)
+            {
+                return View(new LoginVM());
+            }
+            return RedirectToAction("Index", "User", new { area = "Admin" });
         }
         [HttpPost("Login")]
         public async Task<IActionResult> Login(LoginVM vm)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(vm);
             }
@@ -42,15 +47,22 @@ namespace MadhuBlog.Areas.Admin.Controllers
                 _notification.Error("Username does not exist");
                 return View(vm);
             }
-            var verifyPassword = await  _userManager.CheckPasswordAsync(existingUser, vm.Password);
+            var verifyPassword = await _userManager.CheckPasswordAsync(existingUser, vm.Password);
             if (!verifyPassword)
             {
                 _notification.Error("Password doesnot match");
-                return View(vm);   
+                return View(vm);
             }
             await _signInManager.PasswordSignInAsync(vm.Username, vm.Password, vm.RememberMe, true);
             _notification.Success("Login successfull !!!");
-            return RedirectToAction("Index", "User", new { area = "Admin"});
+            return RedirectToAction("Index", "User", new { area = "Admin" });
+        }
+        [HttpPost]
+        public IActionResult Logout()
+        {
+            _signInManager.SignOutAsync();
+            _notification.Success("You are logged out successfully!");
+            return RedirectToAction("Index", "Home", new { area = "" });
         }
     }
 }
