@@ -90,7 +90,7 @@ namespace MadhuBlog.Areas.Admin.Controllers
                     await _userManager.AddToRoleAsync(applicationUser, WebsiteRoles.WebsiteAuthor);
                 }
                 _notification.Success("User registerd successfully!!");
-                RedirectToAction("Index", "User", new { area = "Admin" });
+                return RedirectToAction("Index", "User", new { area = "Admin" });
             }
             return View(vm);
         }
