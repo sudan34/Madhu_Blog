@@ -38,7 +38,7 @@
         <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
             <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" aps-action="index" asp-controller="post" asp-area="Admin">
                 <div class="sidebar-brand-icon rotate-n-15">
                     <i class="fas fa-laugh-wink"></i>
                 </div>
@@ -83,6 +83,13 @@
                             <a class="collapse-item" asp-area="Admin" asp-controller="Page" asp-action="Privacy">Privacy Policy</a>
                         </div>
                     </div>
+                </li>
+                <!-- Nav Item - Dashboard -->
+                <li class="nav-item active">
+                    <a class="nav-link" aps-action="index" asp-controller="Setting" asp-area="Admin">
+                        <i class="fas fa-fw fa-gear"></i>
+                        <span>Setting</span>
+                    </a>
                 </li>
                 <!-- Divider -->
                 <hr class="sidebar-divider d-none d-md-block">
@@ -131,7 +138,7 @@
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                  aria-labelledby="userDropdown">
                                 <div class="dropdown-divider"></div>
-                                <form asp-action="Logout" asp-asp-controller="User" asp-area="Admin" method="post">
+                                <form asp-action="Logout" asp-controller="User" asp-area="Admin" method="post">
                                     <button type="submit" class="dropdown-item">
                                         <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                                         Logout
@@ -164,7 +171,6 @@
 
         </div>
         <!-- End of Content Wrapper -->
-
     </div>
 
     <!-- End of Page Wrapper -->
