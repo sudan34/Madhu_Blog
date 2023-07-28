@@ -14,7 +14,11 @@
         </div>
 
         <div class="col-6">
-            <input type="text" placeholder="Search here.." id="searchInput" class="form-control mb-1 float-end" style="width:100%" />
+            <form class="d-flex" asp-action="SearchResult">
+                <label for="SearchBlog" class="control-label"></label>
+                <input class="form-control me-sm-2" name="SearchBlog" type="search" placeholder="Search">
+                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
+            </form>
         </div>
     </div>
     <div class="card">

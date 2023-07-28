@@ -31,7 +31,6 @@ namespace MadhuBlog.Areas.Admin.Controllers
         public async Task<IActionResult> Index(int? page)
         {
             var listOfPosts = new List<Post>();
-
             var loggedInUser = await _userManager.Users.FirstOrDefaultAsync(x => x.UserName == User.Identity!.Name);
             var loggedInUserRole = await _userManager.GetRolesAsync(loggedInUser!);
             if (loggedInUserRole[0] == WebsiteRoles.WebsiteAdmin)
@@ -54,9 +53,32 @@ namespace MadhuBlog.Areas.Admin.Controllers
 
             int pageSize = 5;
             int pageNumber = (page ?? 1);
-
             return View(await listOfPostsVM.OrderByDescending(x => x.CreatedDate).ToPagedListAsync(pageNumber, pageSize));
         }
+
+        public async Task<IActionResult> SearchResult(String SearchBlog)
+        {
+            // Store the previous URL in the session
+            var listOfPosts = await _context.Posts
+                .Where(p => p.Title!.Contains(SearchBlog))
+                .Include(x => x.ApplicationUser)
+                .ToListAsync();
+
+            var listOfPostsVM = listOfPosts.Select(x => new PostVM()
+            {
+                Id = x.Id,
+                Title = x.Title,
+                CreatedDate = x.CreatedDate,
+                ThumbnailUrl = x.ThumbnailUrl,
+                AuthorName = x.ApplicationUser!.FirstName + " " + x.ApplicationUser.LastName
+            }).ToList();
+
+            int pageSize = 5;
+            int pageNumber = 1; // Show all search results in a single page
+
+            return View("Index", listOfPostsVM.OrderByDescending(x => x.CreatedDate).ToPagedList(pageNumber, pageSize));
+        }
+
         [HttpGet]
         public IActionResult Create()
         {
